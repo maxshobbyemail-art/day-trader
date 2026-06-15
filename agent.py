@@ -526,7 +526,7 @@ def run_agent():
                                     time.sleep(30)
                                     continue
 
-                       box_range = box['high'] - box['low']
+                        box_range = box['high'] - box['low']
                         is_breakout = active_position.get('breakout', False)
                         long_target = (buy_price + box_range) if is_breakout else box['high'] * 0.997
                         short_target = (buy_price - box_range) if is_breakout else box['low'] * 1.003
