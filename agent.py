@@ -526,13 +526,10 @@ def run_agent():
                                     time.sleep(30)
                                     continue
 
-                        box_range = box['high'] - box['low']
-                        breakout_long_target = box['high'] + box_range
-                        breakout_short_target = box['low'] - box_range
+                       box_range = box['high'] - box['low']
                         is_breakout = active_position.get('breakout', False)
-
-                        long_target = breakout_long_target if is_breakout else box['high'] * 0.997
-                        short_target = breakout_short_target if is_breakout else box['low'] * 1.003
+                        long_target = (buy_price + box_range) if is_breakout else box['high'] * 0.997
+                        short_target = (buy_price - box_range) if is_breakout else box['low'] * 1.003
 
                         if side == 'long' and price >= long_target:
                             trading_client.submit_order(MarketOrderRequest(
