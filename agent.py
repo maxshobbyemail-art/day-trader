@@ -450,7 +450,8 @@ def run_agent():
                     if buy_price is not None and shares != 0:
                         if side == 'long':
                             drop = (buy_price - price) / buy_price
-                            if drop >= 0.025:
+                            sl_price = active_position.get('sl', buy_price * 0.975)
+                            if price <= sl_price:
                                 trading_client.submit_order(MarketOrderRequest(
                                     symbol=symbol,
                                     qty=shares,
@@ -466,7 +467,8 @@ def run_agent():
                                 continue
                         elif side == 'short':
                             rise = (price - buy_price) / buy_price
-                            if rise >= 0.025:
+                            sl_price = active_position.get('sl', buy_price * 1.025)
+                            if price >= sl_price:
                                 trading_client.submit_order(MarketOrderRequest(
                                     symbol=symbol,
                                     qty=abs(int(shares)),
@@ -643,7 +645,7 @@ def run_agent():
                             buy_price = fill_price
                             best_price = fill_price
                             trailing_stop_active = False
-                            active_position = {'symbol': symbol, 'side': 'long', 'shares': shares, 'breakout': signal == 2}
+                            active_position = {'symbol': symbol, 'side': 'long', 'shares': shares, 'breakout': signal == 2, 'sl': best_setup['sl']}
                             trade_type = "BREAKOUT LONG" if signal == 2 else "BUY"
                             box_range = boxes[symbol]['high'] - boxes[symbol]['low']
                             target = boxes[symbol]['high'] + box_range if signal == 2 else boxes[symbol]['high']
@@ -660,7 +662,7 @@ def run_agent():
                             buy_price = fill_price
                             best_price = fill_price
                             trailing_stop_active = False
-                            active_position = {'symbol': symbol, 'side': 'short', 'shares': shares, 'breakout': signal == -2}
+                            active_position = {'symbol': symbol, 'side': 'short', 'shares': shares, 'breakout': signal == -2, 'sl': best_setup['sl']}
                             trade_type = "BREAKOUT SHORT" if signal == -2 else "SHORT"
                             box_range = boxes[symbol]['high'] - boxes[symbol]['low']
                             target = boxes[symbol]['low'] - box_range if signal == -2 else boxes[symbol]['low']
